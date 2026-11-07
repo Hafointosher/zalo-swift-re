@@ -1,0 +1,50 @@
+# macOS
+.DS_Store
+
+# SwiftPM / Xcode build output
+.build/
+build/
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+.swiftpm/
+
+# Editor / local tool config (may contain secrets)
+.claude/
+.vscode/
+.idea/
+
+# Release artifacts (scripts/release.sh)
+dist/
+*.dmg
+
+# Signing / notarization material — never commit
+*.p12
+*.cer
+*.certSigningRequest
+*.mobileprovision
+*.provisionprofile
+AuthKey_*.p8
+.env
+.env.*
+
+# Patch leftovers
+*.orig
+*.rej
+
+# ── Third-party Zalo (VNG) content ──────────────────────────────────────────
+# Olaz downloads the official Zalo PC runtime from VNG at first launch; none of
+# VNG's files are redistributed here. Regenerate these locally from Zalo PC if
+# you need them for reverse-engineering (see REVERSE-ENGINEERING-NOTES.md).
+
+# Extracted official Zalo app bundle (app.asar)
+reanalysis/app_extracted/
+# Zalo's Vietnamese UI string table, parsed from pc-dist/lazy/lang-vi.js
+reanalysis/lang_vi.json
+# Zalo brand assets / default avatar extracted from the official app
+Assets/zalo-logo.png
+Assets/zalo-wordmark.svg
+Assets/zalo.icns
+Assets/avatar-default.png
+# Copied from pc-dist/emoji/ (unused by Olaz)
+Sources/Olaz/Resources/sg_emo.json
