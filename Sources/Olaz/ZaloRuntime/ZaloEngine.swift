@@ -338,6 +338,14 @@ final class ZaloEngine {
         switch state["page"] as? String {
         case "login":
             guard case .login(var login) = phase else { return }
+            // The official page gave up on this QR (its poller ran out of `qr_retry`): it is no longer watched, so a
+            // scan would do nothing. Only from waiting-scan — after an accepted login the page also shows this state.
+            if state["invalid"] as? Bool == true, case .waitingScan = login.step {
+                loginTimeout?.cancel()
+                login.step = .expired
+                phase = .login(login)
+                return
+            }
             if let qr = state["qr"] as? String, let png = Self.decodeDataURL(qr) {
                 login.qrPNG = png
                 switch state["event"] as? String {
@@ -427,7 +435,8 @@ final class ZaloEngine {
     /// official `login-startup` chunk.
     static let secondQRRequiredCode = -20
 
-    /// The server sets `qr_timeout`; mirror the official page's expiry UI.
+    /// Fallback only: the page's own expiry (`invalid` above, ~1 min: `qr_retry` × ~21 s long-polls answered 408)
+    /// normally arrives first. This catches a page whose expiry marker we no longer recognise.
     private func scheduleExpiry() {
         loginTimeout?.cancel()
         loginTimeout = Task { [weak self] in
