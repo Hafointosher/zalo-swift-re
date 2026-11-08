@@ -248,7 +248,7 @@ final class ZaloEngine {
             }
         }
         host.bridge.trace = { key, args in
-            guard !key.contains("ZLog"), !key.hasPrefix("$zelectron.store") else { return }
+            guard !key.contains("ZLog"), !key.hasPrefix("$zelectron.store"), !key.hasPrefix("$olazSqlite") else { return }
             log.write("bridge \(key)\(EngineLog.shape(args))")
         }
         host.bridge.onHandlerError = { key, error in log.write("bridge-error \(key): \(error.localizedDescription)") }
@@ -273,6 +273,16 @@ final class ZaloEngine {
         guard let host, let mainProcess else { return }
         phase = .login(LoginState())
         host.load(.login, query: mainProcess.pageQuery())
+    }
+
+    /// Where the official client keeps its databases (Settings ▸ Engine).
+    var storageBackend: ZaloMainProcess.StorageBackend? { mainProcess?.storage }
+
+    /// Moves this install to the native SQLite backend: the account is logged out and starts over on SQLite at the
+    /// next login (history comes back with the phone → PC sync).
+    func switchToSQLite() {
+        mainProcess?.switchStorage(.sqlite)
+        logOut()
     }
 
     /// Clears the session cookies and local client data, then shows a fresh QR.
